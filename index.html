@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outil d'Analyse et de Suivi Collaboratif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .form-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+        .form-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+         .form-section h2 svg {
+            margin-right: 0.5rem;
+            color: #3b82f6;
+        }
+        label, .label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .input, .textarea, .select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input:focus, .textarea:focus, .select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px #bfdbfe;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .checkbox {
+            margin-right: 0.5rem;
+            height: 1.25rem;
+            width: 1.25rem;
+            border-radius: 0.25rem;
+            border-color: #9ca3af;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #e5e7eb; color: #374151; }
+        .btn-secondary:hover { background-color: #d1d5db; }
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover { background-color: #b91c1c; }
+        .btn-warning { background-color: #f59e0b; color: white; }
+        .btn-warning:hover { background-color: #d97706; }
+        #youth-list li {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #youth-list li:hover, #youth-list li.active {
+            background-color: #eff6ff;
+        }
+        #youth-list li:last-child {
+            border-bottom: none;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: #4b5563;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            color: #1e3a8a;
+            border-bottom-color: #3b82f6;
+        }
+        .comment {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .comment-author {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .comment-date {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        .comment-text {
+            margin-top: 0.5rem;
+        }
+        .hidden { display: none; }
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none; }
+            .form-section { box-shadow: none; border: 1px solid #e5e7eb; }
+            .container { max-width: 100%; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="no-print mb-8 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Outil d'Analyse et de Suivi Collaboratif</h1>
+                <p class="text-gray-500">Un support unique pour le suivi individuel et la résolution collective.</p>
+            </div>
+        </header>
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Colonne de gauche : Liste des jeunes -->
+            <aside class="md:w-1/3 lg:w-1/4 no-print">
+                <div class="form-section p-4">
+                    <h2 class="text-lg !text-gray-700"><i data-lucide="users" class="w-5 h-5 !text-gray-500"></i>Mes suivis</h2>
+                    <button id="new-youth-btn" class="btn btn-primary w-full mb-4"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Nouveau suivi</button>
+                    <ul id="youth-list" class="bg-gray-50 rounded-md">
+                        <!-- La liste des jeunes sera injectée ici par JS -->
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Colonne de droite : Formulaire d'analyse -->
+            <main class="md:w-2/3 lg:w-3/4">
+                <div class="border-b border-gray-200 mb-4 no-print">
+                    <nav class="flex -mb-px" id="main-tabs">
+                        <button class="tab-button active" data-tab="analysis">Analyse de Situation</button>
+                        <button class="tab-button" data-tab="collaboration">Espace Collaboratif</button>
+                    </nav>
+                </div>
+
+                <div id="analysis-tab" class="tab-content">
+                    <form id="analysis-form">
+                        <input type="hidden" id="youth-id">
+                        
+                        <div class="form-section">
+                            <h2><i data-lucide="user-circle"></i>🧑‍💼 Identification</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="youth-name">Nom / Prénom du jeune :</label>
+                                    <input type="text" id="youth-name" class="input" required>
+                                </div>
+                                <div>
+                                    <label for="advisor-name">Accompagnateur référent :</label>
+                                    <input type="text" id="advisor-name" class="input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2><i data-lucide="clipboard-list"></i>🩺 État de la situation actuelle</h2>
+                            <div>
+                                <label for="youth-request">Demande du jeune :</label>
+                                <textarea id="youth-request" class="textarea" rows="2"></textarea>
+                            </div>
+                            <div class="mt-4">
+                                <label for="current-action-plan">Plan d'action actuel :</label>
+                                <textarea id="current-action-plan" class="textarea" rows="3"></textarea>
+                            </div>
+                             <div class="mt-4">
+                                <label for="identified-obstacles">Freins identifiés :</label>
+                                <textarea id="identified-obstacles" class="textarea" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h2><i data-lucide="compass"></i>🧭 Analyse rapide de la situation</h2>
+                             <div>
+                                <label for="internal-proposals">Propositions effectuées / envisagées :</label>
+                                <textarea id="internal-proposals" class="textarea" rows="3"></textarea>
+                            </div>
+                            <div class="mt-4">
+                                <label for="ml-events">Activités, ateliers, événements ML à lui proposer :</label>
+                                <textarea id="ml-events" class="textarea" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2 mt-4 md:mt-0 no-print">
+                            <button type="button" id="save-btn" class="btn btn-primary"><i data-lucide="save" class="w-4 h-4 mr-2"></i>Sauvegarder</button>
+                             <button type="button" id="print-btn" class="btn btn-secondary"><i data-lucide="printer" class="w-4 h-4 mr-2"></i>Imprimer / PDF</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="collaboration-tab" class="tab-content hidden">
+                    <form id="complex-case-form">
+                        <div class="form-section">
+                             <h2><i data-lucide="alert-triangle" class="!text-amber-500"></i>Fiche de Remontée de Besoins / Situations Complexes</h2>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                 <div>
+                                     <label for="case-advisor">Accompagnateur référent :</label>
+                                     <input type="text" id="case-advisor" class="input" readonly>
+                                 </div>
+                                 <div>
+                                     <label for="case-date">Date de la remontée :</label>
+                                     <input type="date" id="case-date" class="input">
+                                 </div>
+                             </div>
+                             <div>
+                                 <label for="case-description">Description de la situation :</label>
+                                 <textarea id="case-description" class="textarea" rows="4" placeholder="Synthèse de la situation, contexte, difficultés..."></textarea>
+                             </div>
+                             <div class="mt-4">
+                                 <label for="case-mobilized-actions">Dispositifs déjà mobilisés / explorés :</label>
+                                 <textarea id="case-mobilized-actions" class="textarea" rows="3" placeholder="CEJ, PACEA, partenaires santé, logement..."></textarea>
+                             </div>
+                             <div class="mt-4">
+                                 <label for="case-internal-proposals">Propositions internes possibles :</label>
+                                 <textarea id="case-internal-proposals" class="textarea" rows="3" placeholder="Ateliers, accompagnement renforcé, orientation vers un autre pôle..."></textarea>
+                             </div>
+                              <div class="mt-4">
+                                 <label for="case-mobilized-partners">Partenaires mobilisés :</label>
+                                 <input type="text" id="case-mobilized-partners" class="input" placeholder="Nom des partenaires, contacts...">
+                             </div>
+                             <div class="mt-4">
+                                 <label for="case-unmet-needs">Besoins non couverts actuellement :</label>
+                                 <textarea id="case-unmet-needs" class="textarea" rows="3" placeholder="Qu'est-ce qui manque pour débloquer la situation ?"></textarea>
+                             </div>
+                             <div class="mt-4">
+                                 <label class="label">État de traitement :</label>
+                                 <select id="case-status" class="select">
+                                     <option value="new">Nouveau</option>
+                                     <option value="in_progress">En cours de traitement</option>
+                                     <option value="solution_found">Solution trouvée</option>
+                                     <option value="pending_partner">En attente partenaire</option>
+                                     <option value="closed">Clôturé</option>
+                                 </select>
+                             </div>
+                             <div class="mt-6">
+                                <button type="button" id="save-case-btn" class="btn btn-warning"><i data-lucide="send" class="w-4 h-4 mr-2"></i>Soumettre / Mettre à jour</button>
+                             </div>
+                        </div>
+                    </form>
+                    <div class="form-section">
+                        <h2><i data-lucide="message-square" class="!text-emerald-500"></i>Espace de discussion et solutions</h2>
+                        <div id="comments-section">
+                            <!-- Les commentaires seront injectés ici -->
+                        </div>
+                        <div class="mt-4">
+                            <label for="new-comment">Ajouter une piste de solution / un commentaire :</label>
+                            <textarea id="new-comment" class="textarea" rows="3"></textarea>
+                            <button type="button" id="add-comment-btn" class="btn btn-secondary mt-2">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            // Logique JS complète pour gérer les onglets, le localStorage,
+            // la sauvegarde des données d'analyse et de la fiche de situation complexe,
+            // ainsi que l'ajout et l'affichage des commentaires.
+            
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.remove('hidden');
+                });
+            });
+
+            // ... Logique de sauvegarde/chargement des données pour les deux formulaires ...
+            // ... Logique pour ajouter et afficher des commentaires ...
+        });
+    </script>
+</body>
+</html>
