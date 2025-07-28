@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Outil d'Analyse et de Suivi Collaboratif</title>
+    <title>Outil de Diagnostic et de Regards Croisés</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -12,14 +12,14 @@
             font-family: 'Inter', sans-serif;
             background-color: #f1f5f9;
         }
-        .form-section {
+        .card {
             background-color: white;
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
         }
-        .form-section h2 {
+        .card h2, .card h3 {
             font-size: 1.25rem;
             font-weight: 600;
             color: #1e3a8a;
@@ -27,8 +27,8 @@
             display: flex;
             align-items: center;
         }
-         .form-section h2 svg {
-            margin-right: 0.5rem;
+        .card h2 svg, .card h3 svg {
+            margin-right: 0.75rem;
             color: #3b82f6;
         }
         label, .label {
@@ -49,18 +49,6 @@
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px #bfdbfe;
         }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .checkbox {
-            margin-right: 0.5rem;
-            height: 1.25rem;
-            width: 1.25rem;
-            border-radius: 0.25rem;
-            border-color: #9ca3af;
-        }
         .btn {
             display: inline-flex;
             align-items: center;
@@ -75,205 +63,141 @@
         .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e5e7eb; color: #374151; }
         .btn-secondary:hover { background-color: #d1d5db; }
-        .btn-danger { background-color: #dc2626; color: white; }
-        .btn-danger:hover { background-color: #b91c1c; }
-        .btn-warning { background-color: #f59e0b; color: white; }
-        .btn-warning:hover { background-color: #d97706; }
-        #youth-list li {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e5e7eb;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #youth-list li:hover, #youth-list li.active {
-            background-color: #eff6ff;
-        }
-        #youth-list li:last-child {
-            border-bottom: none;
-        }
-        .tab-button {
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            color: #4b5563;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-        }
-        .tab-button.active {
-            color: #1e3a8a;
-            border-bottom-color: #3b82f6;
-        }
-        .comment {
-            background-color: #f3f4f6;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        .comment-author {
-            font-weight: 600;
-            color: #1f2937;
-        }
-        .comment-date {
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-        .comment-text {
-            margin-top: 0.5rem;
-        }
+        #youth-list li.active { background-color: #eff6ff; }
+        .analysis-table { width: 100%; border-collapse: collapse; }
+        .analysis-table th, .analysis-table td { border: 1px solid #e5e7eb; padding: 0.75rem; text-align: left; }
+        .analysis-table th { background-color: #f3f4f6; font-weight: 600; }
+        .analysis-table textarea { min-height: 80px; }
+        .scoring-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .scoring-item label { font-weight: 600; }
+        .scoring-item input[type="range"] { width: 100%; }
         .hidden { display: none; }
-        @media print {
-            body { background-color: white; }
-            .no-print { display: none; }
-            .form-section { box-shadow: none; border: 1px solid #e5e7eb; }
-            .container { max-width: 100%; padding: 0; }
-        }
     </style>
 </head>
-<body>
-    <div class="container mx-auto p-4 md:p-8">
-        <header class="no-print mb-8 flex flex-col md:flex-row justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">Outil d'Analyse et de Suivi Collaboratif</h1>
-                <p class="text-gray-500">Un support unique pour le suivi individuel et la résolution collective.</p>
-            </div>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">Outil de Diagnostic et de Regards Croisés</h1>
+            <p class="text-gray-500 mt-1">Pour un accompagnement individualisé et une intelligence collective.</p>
         </header>
 
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Colonne de gauche : Liste des jeunes -->
-            <aside class="md:w-1/3 lg:w-1/4 no-print">
-                <div class="form-section p-4">
-                    <h2 class="text-lg !text-gray-700"><i data-lucide="users" class="w-5 h-5 !text-gray-500"></i>Mes suivis</h2>
-                    <button id="new-youth-btn" class="btn btn-primary w-full mb-4"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Nouveau suivi</button>
-                    <ul id="youth-list" class="bg-gray-50 rounded-md">
-                        <!-- La liste des jeunes sera injectée ici par JS -->
-                    </ul>
+            <!-- Sidebar for youth list -->
+            <aside class="md:w-1/3 lg:w-1/4">
+                <div class="card p-4 sticky top-8">
+                    <h2 class="text-lg !text-gray-700"><i data-lucide="users"></i>Jeunes Suivis</h2>
+                    <button id="new-youth-btn" class="btn btn-primary w-full mb-4"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Nouveau Jeune</button>
+                    <ul id="youth-list" class="bg-gray-50 rounded-md"></ul>
                 </div>
             </aside>
 
-            <!-- Colonne de droite : Formulaire d'analyse -->
+            <!-- Main content -->
             <main class="md:w-2/3 lg:w-3/4">
-                <div class="border-b border-gray-200 mb-4 no-print">
-                    <nav class="flex -mb-px" id="main-tabs">
-                        <button class="tab-button active" data-tab="analysis">Analyse de Situation</button>
-                        <button class="tab-button" data-tab="collaboration">Espace Collaboratif</button>
-                    </nav>
-                </div>
-
-                <div id="analysis-tab" class="tab-content">
-                    <form id="analysis-form">
+                <div id="main-content" class="hidden">
+                    <form id="diagnostic-form">
                         <input type="hidden" id="youth-id">
                         
-                        <div class="form-section">
-                            <h2><i data-lucide="user-circle"></i>🧑‍💼 Identification</h2>
+                        <div class="card">
+                            <h2><i data-lucide="user-circle"></i>1. Données de base</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="youth-name">Nom / Prénom du jeune :</label>
-                                    <input type="text" id="youth-name" class="input" required>
+                                <div><label for="youth-name">Prénom (ou initiale)</label><input type="text" id="youth-name" class="input" required></div>
+                                <div><label for="youth-age">Âge</label><input type="number" id="youth-age" class="input"></div>
+                                <div><label for="youth-territory">Territoire / Lieu de vie</label><input type="text" id="youth-territory" class="input"></div>
+                                <div><label for="advisor-name">Référent principal</label><input type="text" id="advisor-name" class="input"></div>
+                                <div><label for="youth-status">Situation de droit</label><input type="text" id="youth-status" class="input" placeholder="CEJ, PACEA, MNA..."></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2><i data-lucide="microscope"></i>2. Grille d’analyse croisée des besoins</h2>
+                            <table class="analysis-table">
+                                <thead>
+                                    <tr>
+                                        <th>Dimension</th>
+                                        <th>Observation actuelle (référent)</th>
+                                        <th>Apports du collectif (regards croisés)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analysis-grid-body">
+                                    <!-- Rows generated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="card">
+                            <h3><i data-lucide="sliders-horizontal"></i>Grille de scoring des besoins</h3>
+                            <div class="scoring-grid">
+                                <div class="scoring-item">
+                                    <label for="score-lifeskills">Life Skills (Confiance, etc.)</label>
+                                    <input type="range" id="score-lifeskills" min="1" max="5" step="1" class="mt-2">
                                 </div>
-                                <div>
-                                    <label for="advisor-name">Accompagnateur référent :</label>
-                                    <input type="text" id="advisor-name" class="input">
+                                <div class="scoring-item">
+                                    <label for="score-autonomy">Autonomie (démarches, mobilité)</label>
+                                    <input type="range" id="score-autonomy" min="1" max="5" step="1" class="mt-2">
+                                </div>
+                                <div class="scoring-item">
+                                    <label for="score-motivation">Motivation / Engagement</label>
+                                    <input type="range" id="score-motivation" min="1" max="5" step="1" class="mt-2">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-section">
-                            <h2><i data-lucide="clipboard-list"></i>🩺 État de la situation actuelle</h2>
+                        <div class="card">
+                            <h2><i data-lucide="lightbulb"></i>3. Freins et Leviers identifiés</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label>Freins (internes / externes / structurels)</label><textarea id="obstacles" class="textarea" rows="4"></textarea></div>
+                                <div><label>Ressources / leviers activables</label><textarea id="levers" class="textarea" rows="4"></textarea></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2><i data-lucide="map"></i>4. Plan d’action partagé</h2>
+                            <table class="analysis-table">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Responsable(s)</th>
+                                        <th>Délai</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="action-plan-body">
+                                    <!-- Rows generated by JS -->
+                                </tbody>
+                            </table>
+                            <button type="button" id="add-action-btn" class="btn btn-secondary mt-4"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>Ajouter une action</button>
+                        </div>
+
+                        <div class="card">
+                            <h2><i data-lucide="users-2"></i>5. Positionnement du collectif</h2>
                             <div>
-                                <label for="youth-request">Demande du jeune :</label>
-                                <textarea id="youth-request" class="textarea" rows="2"></textarea>
+                                <label>Quelle(s) orientation(s) recommanderions-nous aujourd’hui ?</label>
+                                <textarea id="collective-recommendation" class="textarea" rows="3"></textarea>
                             </div>
                             <div class="mt-4">
-                                <label for="current-action-plan">Plan d'action actuel :</label>
-                                <textarea id="current-action-plan" class="textarea" rows="3"></textarea>
+                                <label>Quelles sont les priorités du prochain mois ?</label>
+                                <textarea id="collective-priorities" class="textarea" rows="2"></textarea>
                             </div>
                              <div class="mt-4">
-                                <label for="identified-obstacles">Freins identifiés :</label>
-                                <textarea id="identified-obstacles" class="textarea" rows="2"></textarea>
+                                <label>Y a-t-il une plus-value à mobiliser une ressource externe ou transversale ?</label>
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center"><input type="radio" name="external-resource" id="res-oui" class="mr-2"><label for="res-oui">Oui</label></div>
+                                    <div class="flex items-center"><input type="radio" name="external-resource" id="res-non" class="mr-2"><label for="res-non">Non</label></div>
+                                    <input type="text" id="external-resource-details" class="input flex-grow" placeholder="Préciser...">
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="form-section">
-                            <h2><i data-lucide="compass"></i>🧭 Analyse rapide de la situation</h2>
-                             <div>
-                                <label for="internal-proposals">Propositions effectuées / envisagées :</label>
-                                <textarea id="internal-proposals" class="textarea" rows="3"></textarea>
-                            </div>
-                            <div class="mt-4">
-                                <label for="ml-events">Activités, ateliers, événements ML à lui proposer :</label>
-                                <textarea id="ml-events" class="textarea" rows="2"></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center space-x-2 mt-4 md:mt-0 no-print">
+
+                        <div class="flex justify-end gap-4">
                             <button type="button" id="save-btn" class="btn btn-primary"><i data-lucide="save" class="w-4 h-4 mr-2"></i>Sauvegarder</button>
-                             <button type="button" id="print-btn" class="btn btn-secondary"><i data-lucide="printer" class="w-4 h-4 mr-2"></i>Imprimer / PDF</button>
+                            <button type="button" id="print-btn" class="btn btn-secondary"><i data-lucide="printer" class="w-4 h-4 mr-2"></i>Imprimer</button>
                         </div>
                     </form>
                 </div>
-
-                <div id="collaboration-tab" class="tab-content hidden">
-                    <form id="complex-case-form">
-                        <div class="form-section">
-                             <h2><i data-lucide="alert-triangle" class="!text-amber-500"></i>Fiche de Remontée de Besoins / Situations Complexes</h2>
-                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                 <div>
-                                     <label for="case-advisor">Accompagnateur référent :</label>
-                                     <input type="text" id="case-advisor" class="input" readonly>
-                                 </div>
-                                 <div>
-                                     <label for="case-date">Date de la remontée :</label>
-                                     <input type="date" id="case-date" class="input">
-                                 </div>
-                             </div>
-                             <div>
-                                 <label for="case-description">Description de la situation :</label>
-                                 <textarea id="case-description" class="textarea" rows="4" placeholder="Synthèse de la situation, contexte, difficultés..."></textarea>
-                             </div>
-                             <div class="mt-4">
-                                 <label for="case-mobilized-actions">Dispositifs déjà mobilisés / explorés :</label>
-                                 <textarea id="case-mobilized-actions" class="textarea" rows="3" placeholder="CEJ, PACEA, partenaires santé, logement..."></textarea>
-                             </div>
-                             <div class="mt-4">
-                                 <label for="case-internal-proposals">Propositions internes possibles :</label>
-                                 <textarea id="case-internal-proposals" class="textarea" rows="3" placeholder="Ateliers, accompagnement renforcé, orientation vers un autre pôle..."></textarea>
-                             </div>
-                              <div class="mt-4">
-                                 <label for="case-mobilized-partners">Partenaires mobilisés :</label>
-                                 <input type="text" id="case-mobilized-partners" class="input" placeholder="Nom des partenaires, contacts...">
-                             </div>
-                             <div class="mt-4">
-                                 <label for="case-unmet-needs">Besoins non couverts actuellement :</label>
-                                 <textarea id="case-unmet-needs" class="textarea" rows="3" placeholder="Qu'est-ce qui manque pour débloquer la situation ?"></textarea>
-                             </div>
-                             <div class="mt-4">
-                                 <label class="label">État de traitement :</label>
-                                 <select id="case-status" class="select">
-                                     <option value="new">Nouveau</option>
-                                     <option value="in_progress">En cours de traitement</option>
-                                     <option value="solution_found">Solution trouvée</option>
-                                     <option value="pending_partner">En attente partenaire</option>
-                                     <option value="closed">Clôturé</option>
-                                 </select>
-                             </div>
-                             <div class="mt-6">
-                                <button type="button" id="save-case-btn" class="btn btn-warning"><i data-lucide="send" class="w-4 h-4 mr-2"></i>Soumettre / Mettre à jour</button>
-                             </div>
-                        </div>
-                    </form>
-                    <div class="form-section">
-                        <h2><i data-lucide="message-square" class="!text-emerald-500"></i>Espace de discussion et solutions</h2>
-                        <div id="comments-section">
-                            <!-- Les commentaires seront injectés ici -->
-                        </div>
-                        <div class="mt-4">
-                            <label for="new-comment">Ajouter une piste de solution / un commentaire :</label>
-                            <textarea id="new-comment" class="textarea" rows="3"></textarea>
-                            <button type="button" id="add-comment-btn" class="btn btn-secondary mt-2">Ajouter</button>
-                        </div>
-                    </div>
+                 <div id="welcome-screen" class="text-center p-10 bg-white rounded-lg">
+                    <i data-lucide="file-plus-2" class="mx-auto h-24 w-24 text-gray-300"></i>
+                    <h2 class="mt-6 text-xl font-medium text-gray-700">Bienvenue sur l'outil de diagnostic partagé.</h2>
+                    <p class="mt-2 text-gray-500">Pour commencer, créez une nouvelle fiche jeune ou sélectionnez-en une existante dans le menu de gauche.</p>
                 </div>
             </main>
         </div>
@@ -282,27 +206,147 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            // Logique JS complète pour gérer les onglets, le localStorage,
-            // la sauvegarde des données d'analyse et de la fiche de situation complexe,
-            // ainsi que l'ajout et l'affichage des commentaires.
             
-            const tabs = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
+            const DB_NAME = 'collaborativeDiagnosticsDB';
+            let youthData = JSON.parse(localStorage.getItem(DB_NAME)) || {};
+            let currentYouthId = null;
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
+            const analysisDomains = [
+                'Projet professionnel', 'Santé / Bien-être mental', 'Autonomie / Mobilité', 
+                'Ressources matérielles', 'Compétences transversales', 'Environnement social', 'Motivation / confiance'
+            ];
 
-                    tabContents.forEach(content => {
-                        content.classList.add('hidden');
-                    });
-                    document.getElementById(`${tab.dataset.tab}-tab`).classList.remove('hidden');
+            const youthList = document.getElementById('youth-list');
+            const newYouthBtn = document.getElementById('new-youth-btn');
+            const mainContent = document.getElementById('main-content');
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const saveBtn = document.getElementById('save-btn');
+            const printBtn = document.getElementById('print-btn');
+            const addActionBtn = document.getElementById('add-action-btn');
+            const actionPlanBody = document.getElementById('action-plan-body');
+            const analysisGridBody = document.getElementById('analysis-grid-body');
+
+            function saveToDB() {
+                localStorage.setItem(DB_NAME, JSON.stringify(youthData));
+            }
+
+            function renderYouthList() {
+                youthList.innerHTML = '';
+                if (Object.keys(youthData).length === 0) {
+                    youthList.innerHTML = `<li class="p-4 text-center text-gray-500 text-sm">Aucun suivi.</li>`;
+                    return;
+                }
+                Object.values(youthData).forEach(youth => {
+                    const li = document.createElement('li');
+                    li.dataset.id = youth.id;
+                    li.className = `p-3 cursor-pointer hover:bg-blue-100 ${youth.id === currentYouthId ? 'active' : ''}`;
+                    li.textContent = youth['youth-name'] || 'Nouveau Jeune';
+                    li.addEventListener('click', () => loadYouth(youth.id));
+                    youthList.appendChild(li);
                 });
+            }
+
+            function generateGridAndPlan(data) {
+                analysisGridBody.innerHTML = '';
+                analysisDomains.forEach(domain => {
+                    const row = document.createElement('tr');
+                    const domainKey = domain.toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-');
+                    row.innerHTML = `
+                        <td><strong>${domain}</strong></td>
+                        <td><textarea class="textarea" data-field="advisor-${domainKey}">${data[`advisor-${domainKey}`] || ''}</textarea></td>
+                        <td><textarea class="textarea" data-field="collective-${domainKey}">${data[`collective-${domainKey}`] || ''}</textarea></td>
+                    `;
+                    analysisGridBody.appendChild(row);
+                });
+
+                actionPlanBody.innerHTML = '';
+                if (data.actionPlan && data.actionPlan.length > 0) {
+                    data.actionPlan.forEach(action => addActionRow(action.action, action.responsible, action.deadline));
+                }
+            }
+
+            function addActionRow(action = '', responsible = '', deadline = '') {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="input action-input" value="${action}"></td>
+                    <td><input type="text" class="input responsible-input" value="${responsible}"></td>
+                    <td><input type="date" class="input deadline-input" value="${deadline}"></td>
+                `;
+                actionPlanBody.appendChild(row);
+            }
+
+            function clearForm() {
+                document.getElementById('diagnostic-form').reset();
+                document.getElementById('youth-id').value = '';
+                generateGridAndPlan({});
+            }
+
+            function loadYouth(id) {
+                currentYouthId = id;
+                const data = youthData[id] || {};
+                
+                document.querySelectorAll('#diagnostic-form [id]').forEach(el => {
+                    if (el.type === 'radio' || el.type === 'checkbox') {
+                        el.checked = data[el.id] || false;
+                    } else if (data[el.id] !== undefined) {
+                        el.value = data[el.id];
+                    }
+                });
+                
+                generateGridAndPlan(data);
+                
+                welcomeScreen.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                renderYouthList();
+            }
+
+            function saveCurrentYouth() {
+                if (!currentYouthId) return;
+                const data = { id: currentYouthId };
+                document.querySelectorAll('#diagnostic-form [id]').forEach(el => {
+                    if (el.id) {
+                        if (el.type === 'radio' || el.type === 'checkbox') {
+                            data[el.id] = el.checked;
+                        } else {
+                            data[el.id] = el.value;
+                        }
+                    }
+                });
+
+                document.querySelectorAll('.analysis-table textarea').forEach(area => {
+                    data[area.dataset.field] = area.value;
+                });
+                
+                data.actionPlan = [];
+                document.querySelectorAll('#action-plan-body tr').forEach(row => {
+                    data.actionPlan.push({
+                        action: row.querySelector('.action-input').value,
+                        responsible: row.querySelector('.responsible-input').value,
+                        deadline: row.querySelector('.deadline-input').value,
+                    });
+                });
+
+                youthData[currentYouthId] = data;
+                saveToDB();
+                renderYouthList();
+                alert('Fiche sauvegardée !');
+            }
+
+            newYouthBtn.addEventListener('click', () => {
+                const newId = `youth_${Date.now()}`;
+                youthData[newId] = { id: newId };
+                currentYouthId = newId;
+                saveToDB();
+                clearForm();
+                loadYouth(newId);
             });
 
-            // ... Logique de sauvegarde/chargement des données pour les deux formulaires ...
-            // ... Logique pour ajouter et afficher des commentaires ...
+            saveBtn.addEventListener('click', saveCurrentYouth);
+            printBtn.addEventListener('click', () => window.print());
+            addActionBtn.addEventListener('click', () => addActionRow());
+
+            // Initial load
+            renderYouthList();
         });
     </script>
 </body>
